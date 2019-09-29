@@ -23,7 +23,6 @@ class SolverSudoku
     [2, 5, 8, 3, 1, 7, 9, 6, 4],
     [3, 9, 4, 5, 6, 8, 1, 7, 2]
   ]
-
 =end
 
   def initialize(matrix)
@@ -31,10 +30,57 @@ class SolverSudoku
   end
 
   def solver
+    fill_sudoku
+    draw_sudoku(@matrix)
+    @matrix
   end
 
-  def draw_sudoku(matrix)
-    matrix.each {|row| puts row.inspect }
+  def fill_sudoku
+    [*0..8].each do |col|
+      [*1..9].each do |number|
+        [*0..8].each do |row|
+          if @matrix[row][col].zero?
+            @matrix[row][col] = number
+            if satisfy_rules?(row, col) and try_other_positions(row, col, number).zero?
+              @matrix[row][col] = number
+            else
+              @matrix[row][col] = 0
+            end
+          end
+        end
+      end
+    end
+    sudoku_has_zeros? ? fill_sudoku : return
+  end
+
+  def sudoku_has_zeros?
+    verify = [*0..8].flat_map do |row|
+               [*0..8].map do |col|
+                 @matrix[row][col]
+               end
+             end
+    verify.include?(0)
+  end
+
+  # check number possibilities
+  def try_other_positions(row, col, number)
+    counter = 0
+    @matrix[row][col] = 0
+
+    square_rows = [[*0..2], [*3..5], [*6..8]][row/3]
+    square_cols = [[*0..2], [*3..5], [*6..8]][col/3]
+    square_rows.flat_map do |m|
+      square_cols.map do |n|
+        if @matrix[m][n].zero?
+          @matrix[m][n] = number
+          if satisfy_rules?(m, n) and ( ( m!= row) or ( m == row and n != col) )
+            counter+=1
+          end
+          @matrix[m][n] = 0
+        end
+      end
+    end
+    counter
   end
 
   #verify than in the column of number provided do not repeat numbers
@@ -58,14 +104,24 @@ class SolverSudoku
   #verify than in the grid of number provided do not repeat numbers
   def verify_grid(row, col)
     number = @matrix[row][col]
-    sel_rows = [[*0..2], [*3..5], [*6..8]][row/3]
-    sel_cols = [[*0..2], [*3..5], [*6..8]][col/3]
+    square_rows = [[*0..2], [*3..5], [*6..8]][row/3]
+    square_cols = [[*0..2], [*3..5], [*6..8]][col/3]
 
-    verify = sel_rows.flat_map do |m|
-        sel_cols.map do |n|
-          @matrix[m][n].eql?(number)
+    verify = square_rows.flat_map do |m|
+      square_cols.map do |n|
+        @matrix[m][n].eql?(number)
       end
     end
     verify.count(true).eql?(1)
   end
+
+  private
+  def draw_sudoku(matrix)
+    matrix.each {|row| puts row.inspect }
+  end
+
+  def satisfy_rules?(row, col)
+    verify_column(row, col) && verify_row(row, col) && verify_grid(row, col)
+  end
+
 end

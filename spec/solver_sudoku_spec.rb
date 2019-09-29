@@ -97,6 +97,89 @@ describe "solver_sudoku" do
     end
   end
 
+  context "#sudoku_has_zeros" do
+    context "sudoku has zeros" do
+      it "should return true" do
+        matrix = [
+          [8, 0, 0, 0, 5, 0, 0, 0, 0],
+          [0, 0, 9, 0, 0, 6, 4, 0, 0],
+          [0, 6, 2, 1, 0, 0, 0, 9, 0],
+          [0, 0, 6, 8, 0, 0, 0, 4, 0],
+          [9, 0, 0, 0, 7, 0, 0, 0, 6],
+          [0, 1, 0, 0, 0, 9, 7, 0, 0],
+          [0, 7, 0, 0, 0, 4, 3, 5, 0],
+          [0, 0, 8, 3, 0, 0, 9, 0, 0],
+          [0, 0, 0, 0, 6, 0, 0, 0, 2]
+        ]
+
+        result = SolverSudoku.new(matrix).sudoku_has_zeros?
+
+        expect(result).to eq(true)
+
+      end
+    end
+    context "sudoku has not zeros" do
+      it "should return false" do
+        matrix = [
+          [8, 4, 7, 9, 5, 2, 6, 3, 1],
+          [1, 3, 9, 7, 8, 6, 4, 2, 5],
+          [5, 6, 2, 1, 4, 3, 8, 9, 7],
+          [7, 2, 6, 8, 3, 1, 5, 4, 9],
+          [9, 8, 3, 4, 7, 5, 2, 1, 6],
+          [4, 1, 5, 6, 2, 9, 7, 8, 3],
+          [6, 7, 1, 2, 9, 4, 3, 5, 8],
+          [2, 5, 8, 3, 1, 7, 9, 6, 4],
+          [3, 9, 4, 5, 6, 8, 1, 7, 2]
+        ]
+
+        result = SolverSudoku.new(matrix).sudoku_has_zeros?
+
+        expect(result).to eq(false)
+      end
+    end
+  end
+
+  context "try_other_positions" do
+    context "the number has only one possibility" do
+      it "should return cero" do
+        matrix = [
+          [8, 0, 0, 0, 5, 0, 0, 0, 0],
+          [0, 0, 9, 0, 0, 6, 4, 0, 0],
+          [0, 6, 2, 1, 0, 0, 0, 9, 0],
+          [0, 0, 6, 8, 0, 0, 0, 4, 0],
+          [9, 0, 0, 0, 7, 0, 0, 0, 6],
+          [0, 1, 0, 0, 0, 9, 7, 0, 0],
+          [0, 7, 0, 0, 0, 4, 3, 5, 0],
+          [0, 0, 8, 3, 0, 0, 9, 0, 0],
+          [0, 0, 0, 0, 6, 0, 0, 0, 2]
+        ]
+
+        result = SolverSudoku.new(matrix).try_other_positions(3, 0, 7)
+
+        expect(result).to eq(0)
+      end
+    end
+    context "the number has many possibility" do
+      it "should return a nonzero number" do
+        matrix = [
+          [8, 0, 0, 0, 5, 0, 0, 0, 0],
+          [0, 0, 9, 0, 0, 6, 4, 0, 0],
+          [0, 6, 2, 1, 0, 0, 0, 9, 0],
+          [0, 0, 6, 8, 0, 0, 0, 4, 0],
+          [9, 0, 0, 0, 7, 0, 0, 0, 6],
+          [0, 1, 0, 0, 0, 9, 7, 0, 0],
+          [0, 7, 0, 0, 0, 4, 3, 5, 0],
+          [0, 0, 8, 3, 0, 0, 9, 0, 0],
+          [0, 0, 0, 0, 6, 0, 0, 0, 2]
+        ]
+
+        result = SolverSudoku.new(matrix).try_other_positions(0, 1, 1)
+
+        expect(result).to eq(2)
+      end
+    end
+  end
+
   context "#solver" do
     it "should return solution of the sudoku provider" do
       matrix = [
