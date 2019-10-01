@@ -47,6 +47,8 @@ class SolverSudoku
               @matrix[row][col] = 0
             end
           end
+          draw_sudoku(@matrix)
+          puts "#" *20
         end
       end
     end
@@ -67,8 +69,8 @@ class SolverSudoku
     counter = 0
     @matrix[row][col] = 0
 
-    square_rows = [[*0..2], [*3..5], [*6..8]][row/3]
-    square_cols = [[*0..2], [*3..5], [*6..8]][col/3]
+    square_rows = calculate_square(row)
+    square_cols = calculate_square(col)
     square_rows.flat_map do |m|
       square_cols.map do |n|
         if @matrix[m][n].zero?
@@ -104,8 +106,8 @@ class SolverSudoku
   #verify than in the grid of number provided do not repeat numbers
   def verify_grid(row, col)
     number = @matrix[row][col]
-    square_rows = [[*0..2], [*3..5], [*6..8]][row/3]
-    square_cols = [[*0..2], [*3..5], [*6..8]][col/3]
+    square_rows = calculate_square(row)
+    square_cols = calculate_square(col)
 
     verify = square_rows.flat_map do |m|
       square_cols.map do |n|
@@ -122,6 +124,10 @@ class SolverSudoku
 
   def satisfy_rules?(row, col)
     verify_column(row, col) && verify_row(row, col) && verify_grid(row, col)
+  end
+
+  def calculate_square(position)
+     [[*0..2], [*3..5], [*6..8]][position/3]
   end
 
 end
